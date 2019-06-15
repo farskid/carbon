@@ -11,93 +11,91 @@
 <br></br>
 [![Deploy to now](https://deploy.now.sh/static/button.svg)](https://deploy.now.sh/?repo=https://github.com/dawnlabs/carbon&env=TWITTER_CONSUMER_KEY&env=TWITTER_CONSUMER_SECRET&env=TWITTER_ACCESS_TOKEN_KEY&env=TWITTER_ACCESS_TOKEN_SECRET&env=LOGS_SECRET_PREFIX)
 
-##### വിവർത്തനങ്ങൾ
+## Introduction
 
-- [Español](/docs/README.es.md)
-- [हिंदी](/docs/README.hi.md)
-- [Deutsch](/docs/README.de.md)
-- [简体中文](/docs/README.cn.zh.md)
-- [Português](/docs/README.br.pt.md)
-- [മലയാളം](/docs/README.ml.md)
+Twitter で[いつも](https://twitter.com/dan_abramov/status/890191815567175680)[見るような](https://twitter.com/reactjs/status/890511993261654017)[こうしたコード](https://twitter.com/notquiteleo/status/873483329345028096)の[スクリーンショット](https://twitter.com/zeithq/status/805779711154647040)をご存知ですか？こうしたコードはたいていは印象的ですが、美しさの点では改善の余地があります。Carbon を使えば、ソースコードの美しいスクリーンショットを簡単に作成し、共有することができます。今すぐ、この新しいデザインの力を使ってフォロワーを感動させましょう。
 
-## ആമുഖം
+プロジェクトの詳細は[carbon.now.sh](https://carbon.now.sh)や[投稿](https://dawnlabs.io/case-studies/carbon/)にあります。
 
-ട്വിറ്ററിൽ നിങ്ങൾ [കാണുന്ന](https://twitter.com/dan_abramov/status/890191815567175680) [കോഡുകളുടെ](https://twitter.com/reactjs/status/890511993261654017) [സ്ക്രീൻഷോട്ടുകളെല്ലാം](https://twitter.com/notquiteleo/status/873483329345028096) [നിങ്ങൾക്ക് അറിയാമോ](https://twitter.com/zeithq/status/805779711154647040)? കോഡ് സാധാരണയായി ആകർഷകമാണെങ്കിലും, സൗന്ദര്യശാസ്ത്ര ഡിപ്പാർട്ടുമെൻറിലെ മെച്ചപ്പെടുത്തലിന് ഇടം കാണാം. നിങ്ങളുടെ സോഴ്സ് കോഡിന്റെ സുന്ദരമായ ചിത്രങ്ങൾ സൃഷ്ടിക്കുന്നതും പങ്കുവെക്കുന്നതും കാർബൺ എളുപ്പമാക്കുന്നു. അപ്പോൾ എന്തിനാണ് നിങ്ങൾ കാത്തിരിക്കുന്നത്? നിങ്ങളുടെ പുതുതായി രൂപകൽപ്പന ചെയ്ത ഡിസൈനുകൾ ഉപയോഗിച്ച് നിങ്ങളെ പിന്തുടരുന്ന എല്ലാവരെയും ആകർഷിക്കുക.
+## Features
 
-[കാർബൺ](https://carbon.now.sh) സന്ദർശിക്കുക അല്ലെങ്കിൽ പ്രോജക്റ്റിനെക്കുറിച്ച് കൂടുതലറിയാൻ ഞങ്ങളുടെ [പോസ്റ്റ്](https://dawnlabs.io/case-studies/carbon/) വായിക്കുക.
+- **GitHub gist からのインポート**. URL に GitHub gist id を付け加える
+- **カスタマイズ**. シンタックステーマやウィンドウスタイルなどをカスタマイズ
+- **すばやくシェア**. ワンクリックで画像を保存したり、リンクをツイート
 
-## സവിശേഷതകൾ
-
-- **GitHub gist ൽ നിന്ന് ഇമ്പോർട്ടുചെയ്യുക**. ലളിതമായി ഒരു GitHub gist id url ലിൽ ആയി ചേർക്കുക
-- **ഇഷ്ടാനുസൃതമാക്കൽ**. നിങ്ങളുടെ ഇമേജ് സിന്റാക്സ് തീം, വിൻഡോ ശൈലി തുടങ്ങിയവയും മറ്റും ഇഷ്ടാനുസൃതമാക്കുക
-- **വേഗത്തിൽ പങ്കിടുക**. നിങ്ങളുടെ ചിത്രം save ചെയ്യുക അല്ലെങ്കിൽ ഒരു ക്ലിക്കിലൂടെ ഒരു ലിങ്ക് ട്വീറ്റ് ചെയ്യുക
-
-## ഉദാഹരണം
+## Example
 
 <p align="center"><img width=100% src="https://user-images.githubusercontent.com/10369094/30791512-cb001438-a167-11e7-952b-f0f0e5c4499e.png"></p>
 
-## ഉപയോഗം
+## Usage
 
-#### ഇറക്കുമതി ചെയ്യുക
+#### Import
 
-കാർബണിലേക്ക് കോഡ് ഇംപോർട്ട് ചെയ്യുന്നതിന് കുറച്ച് വ്യത്യസ്ത മാർഗ്ഗങ്ങളുണ്ട്:
+Carbon にインポートするには何通りかの方法があります:
 
-- എഡിറ്ററിലേക്ക് ഒരു ഫയൽ വലിച്ചിടുക
-- ഒരു GitHub gist idി url ലേക്ക് കൂട്ടിച്ചേർക്കുക (ഉദാ. `carbon.now.sh/GIST_ID_HERE`)
-- നിങ്ങളുടെ കോഡ് നേരിട്ട് കൂട്ടിച്ചേര്ക്കുക
+- エディターにファイルをドロップする
+- URL に GitHub gist id を付け加える (e.g. `carbon.now.sh/GIST_ID_HERE`)
+- コードを直接ペーストする
 
-#### ഇഷ്ടാനുസൃതമാക്കൽ
+#### Customization
 
-കാർബോണിൽ നിങ്ങളുടെ എല്ലാ കോഡും നിങ്ങൾക്ക് ലഭിച്ചുകഴിഞ്ഞാൽ, നിങ്ങൾക്ക് syntax തീം, പശ്ചാത്തല നിറം, വിൻഡോ തീം അല്ലെങ്കിൽ പാഡിംഗ് എന്നിവ മാറ്റിക്കൊണ്ട് നിങ്ങളുടെ ചിത്രം ഇഷ്ടാനുസൃതമാക്കാവുന്നതാണ്.
+コードを Carbon にインポートできたらシンタックステーマや背景色、ウィンドウスタイル、パディングなどで、画像をカスタマイズすることができます。
 
-#### കയറ്റുമതി / പങ്കിടൽ
+#### Export/Sharing
 
-നിങ്ങളുടെ ചിത്രം നിങ്ങൾ ഇഷ്ടാനുസൃതമാക്കിയ ശേഷം നിങ്ങൾക്ക് ഒരു ചിത്രത്തിലേക്ക് ഒരു ലിങ്ക് ട്വീറ്റ് ചെയ്യാം, അല്ലെങ്കിൽ നേരിട്ട് save ചെയ്യാൻ കഴിയും.
+画像のカスタマイズが終わったら、画像リンクをツイートしたり直接ダウンロードできます。
 
-## സമൂഹം
+&apos;Tweet&apos;ボタンを使えば、Carbon は自動的に画像を利用できるようにします。もし Carbon の画像を手動でツイートしたい場合は、[画像のアクセシビリティを向上させる方法](https://help.twitter.com/en/using-twitter/picture-descriptions)を確認してください。
 
-ഞങ്ങളുടെ ആകർഷണീയമായ കമ്മ്യൂണിറ്റി സൃഷ്ടിച്ച ഈ പ്രോജക്ടുകൾ പരിശോധിക്കുക:
+投稿の中で Carbon 画像を使うと、ソースコードは assistive technology からは見えなくなり、拡大やコピーなどはできなくなります。画像の下に[HTML Details Element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)のように、テキストとしてソースコードを持つ別の要素を追加することを検討してください。
 
-##### എഡിറ്റർ പ്ലഗിനുകൾ
+## Community
 
-- [IntelliJ IDEA `carbon-now-sh`](https://plugins.jetbrains.com/plugin/10469-carbon-now-sh) - ഒരു കോൺടെക്സ്റ്റ് മെനുവിലൂടെ കാർബണിൽ നിങ്ങളുടെ നിലവിലെ IntelliJ IDEA ഫയലിൽ തിരഞ്ഞെടുത്ത ഭാഗം തുറക്കുക
-- [Atom `carbon-now-sh`](https://atom.io/packages/carbon-now-sh) - നിങ്ങളുടെ നിലവിലെ ആറ്റം ഫയൽ കാർബണിൽ `shift-cmd-A` ഉപയോഗിച്ച് തുറക്കുക
-- [VS Code `carbon-now-sh`](https://marketplace.visualstudio.com/items?itemName=ericadamski.carbon-now-sh) - നിങ്ങളുടെ നിലവിലുള്ള VS Code ഫയൽ കാർബണിൽ 'carbon' എന്ന കമാൻഡ് ഉപയോഗിച്ച് തുറക്കുക
-- [Sublime Text 3 `carbon-now-sh`](https://github.com/molnarmark/carbonSublime) - ഇച്ഛാനുസൃത bound കീ ഉപയോഗിച്ച് നിങ്ങളുടെ നിലവിലെ Sublime Text 3 ഫയലിലെ തിരഞ്ഞെടുത്ത ഭാഗം തുറക്കുക
-- [Vim `carbon-now-sh`](https://github.com/kristijanhusak/vim-carbon-now-sh) - നിങ്ങളുടെ നിലവിലുള്ള Vim/Neovim ലെ തിരഞ്ഞെടുത്ത ഭാഗം 'CarbonNowSh()` ഫങ്ഷൻ ഉപയോഗിച്ച് തുറക്കുക
-- [Emacs `carbon-now-sh`](https://github.com/veelenga/carbon-now-sh.el) - നിങ്ങളുടെ നിലവിലുള്ള Emacs ലെ തിരഞ്ഞെടുത്ത ഭാഗം 'carbon-now-sh` എന്ന ഇന്ററാക്ടീവ് ഫങ്ഷൻ ഉപയോഗിച്ച് തുറക്കുക
+私たちの素晴らしいコミュニティが作成したプロジェクトをチェックしてください:
 
-##### CLI- കൾ
+##### Editor Plugins
 
-- [CLI `carbon-now-cli`](https://github.com/mixn/carbon-now-cli) - കാർബണിൽ ഒരു ഫയൽ തുറക്കുക അല്ലെങ്കിൽ 'carbon-now' ഉപയോഗിച്ച് നേരിട്ട് ഡൌൺലോഡ് ചെയ്യുക, ഒരു ഇന്ററാക്ടീവ് മോഡ് അവതരിപ്പിക്കുന്നു, തിരഞ്ഞെടുത്ത ഹൈലൈറ്റിംഗ് തുടങ്ങിയവ
+- [IntelliJ IDEA `carbon-now-sh`](https://plugins.jetbrains.com/plugin/10469-carbon-now-sh) - 現在の IntelliJ IDEA ファイルの選択したコードをコンテキストメニューから Carbon で開く
+- [Atom `carbon-now-sh`](https://atom.io/packages/carbon-now-sh) - `shift-cmd-A`コマンドを使い、現在の Atom ファイルを Carbon で開く
+- [VS Code `carbon-now-sh`](https://marketplace.visualstudio.com/items?itemName=ericadamski.carbon-now-sh) - `carbon`コマンドを使い、VS Code ファイルを Carbon で開く
+- [Sublime Text 3 `carbon-now-sh`](https://github.com/molnarmark/carbonSublime) - カスタムコマンドを使い、現在の Sublime Text 3 ファイルの選択したコードを Carbon で開く
+- [Vim `carbon-now-sh`](https://github.com/kristijanhusak/vim-carbon-now-sh) - `CarbonNowSh()`関数を使い、現在の Vim/Neovim を Carbon で開く
+- [Emacs `carbon-now-sh`](https://github.com/veelenga/carbon-now-sh.el) - `carbon-now-sh`インタラクティブ関数を使い、現在の Emacs を Carbon で開く
+- [Xcode `carbon-now-sh`](https://github.com/StevenMagdy/CarboNow4Xcode) - `carbon.now.sh`を使い、選択したコードを Carbon で開く
 
-##### ലൈബ്രറികൾ
+##### Tools
 
-- [R `carbonate`](https://yonicd.github.io/carbonate/) - 'R' ൽ ഇമേജ് സൗന്ദര്യാത്മകത കൈകാര്യം ചെയ്യുക കൂടാതെ ഒന്നുകിൽ കാർബണിൽ തുറക്കുക അല്ലെങ്കിൽ നേരിട്ട് ഡൗൺലോഡുചെയ്യുക..
+- [CLI `carbon-now-cli`](https://github.com/mixn/carbon-now-cli) - `carbon-now`を使い、Carbon でファイルを開いたり、直接ダウンロードする。インタラクティブモードや、シンタックスハイライト機能など
+- [Carbonize](https://itunes.apple.com/us/app/carbonize/id1451177988) - 拡張ネイティブ機能を備えた macOS ラッパー
+- [CodeExpander](https://codeexpander.com) - TextExpander 機能を備えたスマートな GitHub Gist クライアント
 
-##### പാഠപുസ്തകങ്ങൾ
+##### Libraries
 
-- ["CS 101 - An Introduction to Computational Thinking"](https://itunes.apple.com/us/book/id1435714196) - സർബോ റോയുടെ ഒരു കമ്പ്യൂട്ടർ സയൻസ് പാഠപുസ്തകം.
+- [R `carbonate`](https://yonicd.github.io/carbonate/) - `R`でインタラクティブに画像のスタイルを操作し、コードを Carbon で開くか直接ダウンロードする
 
-## സംഭാവന ചെയ്യുക
+##### Textbooks
 
-PR കൾ സ്വാഗതം ചെയ്യുന്നു! കൂടുതൽ വിവരങ്ങൾക്ക് ദയവായി ഞങ്ങളുടെ [CONTRIBUTING.md](https://github.com/dawnlabs/carbon/blob/master/.github/CONTRIBUTING.md) കാണുക.
+- ["CS 101 - An Introduction to Computational Thinking"](https://itunes.apple.com/us/book/id1435714196) - Sarbo Roy によるコンピューターサイエンスのテキストブック
 
-## നന്ദി
+## Contribute
 
-[ ▲ ZEIT ](https://zeit.co/) കാർബൺ ഹോസ്റ്റുചെയ്യുന്നതിനുള്ള സ്പോൺസർ.
+PR を歓迎しています。詳細は[CONTRIBUTING.md](https://github.com/dawnlabs/carbon/blob/master/.github/CONTRIBUTING.md)をご覧ください。
 
-## രചയിതാക്കൾ
+## Thanks To
 
-കാർബൺ ഒരു <a href="http://dawnlabs.io/"><img width=8% src="https://cloud.githubusercontent.com/assets/10369094/25406306/dacebd4c-29cb-11e7-8e1c-468687cde495.png"></a> പ്രോജക്റ്റ് ആണ്
+[ ▲ ZEIT ](https://zeit.co/)は Carbon のホスティングを支援してくれています。
+
+## Authors
+
+Carbon は<a href="http://dawnlabs.io/"><img width=8% src="https://cloud.githubusercontent.com/assets/10369094/25406306/dacebd4c-29cb-11e7-8e1c-468687cde495.png"></a>によるプロジェクトです
 
 - Mike Fix ([@mfix22](https://github.com/mfix22))
 - Brian Dennis ([@briandennis](https://github.com/briandennis))
 - Jake Dexheimer ([@jakedex](https://github.com/jakedex))
 
-## സംഭാവന നൽകിയവർ
+## Contributors
 
-നന്ദി ഈ വിസ്മയകരമായ എല്ലാ ആളുകൾക്കും ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+これらのすべての素晴らしい人々に感謝を ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->

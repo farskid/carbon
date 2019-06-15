@@ -4,7 +4,7 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
-    mocha: true
+    jest: true
   },
   extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:jsx-a11y/recommended'],
   parserOptions: {
@@ -14,20 +14,22 @@ module.exports = {
     },
     sourceType: 'module'
   },
-  plugins: ['react', 'import', 'jsx-a11y', 'react-hooks'],
+  plugins: ['import', 'react', 'jsx-a11y', 'react-hooks'],
   rules: {
+    'import/no-unresolved': 'error',
+    'no-duplicate-imports': 'error',
     'react/prop-types': 'off',
     'react/display-name': 'off',
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
-    'import/no-unresolved': 'error',
-    'no-duplicate-imports': 'error',
     'jsx-a11y/click-events-have-key-events': 'off',
-    'react-hooks/rules-of-hooks': 'error'
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
+    'no-console': ['error', { allow: ['error'] }]
   },
   settings: {
     react: {
-      version: '16.7'
+      version: 'detect'
     }
   }
 }

@@ -1,11 +1,11 @@
 // Theirs
-import url from 'url'
 import React from 'react'
 import domtoimage from 'dom-to-image'
 import dynamic from 'next/dynamic'
 import Dropzone from 'dropperx'
 
 // Ours
+import ApiContext from './ApiContext'
 import Dropdown from './Dropdown'
 import Settings from './Settings'
 import Toolbar from './Toolbar'
@@ -25,10 +25,12 @@ import {
   DEFAULT_CODE,
   DEFAULT_SETTINGS,
   DEFAULT_LANGUAGE,
-  DEFAULT_PRESET_ID
+  DEFAULT_PRESET_ID,
+  DEFAULT_THEME,
+  FONTS
 } from '../lib/constants'
-import { serializeState, getQueryStringState } from '../lib/routing'
-import { getSettings, escapeHtml, unescapeHtml, formatCode, omit } from '../lib/util'
+import { serializeState, getRouteState } from '../lib/routing'
+import { getSettings, unescapeHtml, formatCode, omit } from '../lib/util'
 import LanguageIcon from './svg/Language'
 
 const languageIcon = <LanguageIcon />
@@ -38,17 +40,19 @@ const BackgroundSelect = dynamic(() => import('./BackgroundSelect'), {
 })
 
 class Editor extends React.Component {
+  static contextType = ApiContext
+
   constructor(props) {
     super(props)
     this.state = {
       ...DEFAULT_SETTINGS,
-      preset: DEFAULT_PRESET_ID
+      preset: DEFAULT_PRESET_ID,
+      loading: true
     }
 
     this.export = this.export.bind(this)
     this.upload = this.upload.bind(this)
     this.updateSetting = this.updateSetting.bind(this)
-    this.updateTheme = this.updateTheme.bind(this)
     this.updateLanguage = this.updateLanguage.bind(this)
     this.updateBackground = this.updateBackground.bind(this)
     this.resetDefaultSettings = this.resetDefaultSettings.bind(this)
@@ -57,35 +61,34 @@ class Editor extends React.Component {
   }
 
   async componentDidMount() {
-    const { asPath = '' } = this.props.router
-    const { query, pathname } = url.parse(asPath, true)
-    const path = escapeHtml(pathname.split('/').pop())
-    const queryParams = getQueryStringState(query)
-    const initialState = Object.keys(queryParams).length ? queryParams : {}
-    try {
-      // TODO fix this hack
-      if (this.props.api.getGist && path.length >= 19 && path.indexOf('.') === -1) {
-        const { content, language } = await this.props.api.getGist(path)
-        if (language) {
-          initialState.language = language.toLowerCase()
-        }
-        initialState.code = content
+    const { queryState, parameter } = getRouteState(this.props.router)
+
+    // TODO we could create an interface for loading this config, so that it looks identical
+    // whether config is loaded from localStorage, gist, or even something like IndexDB
+    let gistState
+    if (this.context.gist && parameter) {
+      const { config, ...gist } = (await this.context.gist.get(parameter)) || {}
+      if (typeof config === 'object') {
+        this.gist = gist
+        gistState = config
       }
-    } catch (e) {
-      // eslint-disable-next-line
-      console.log(e)
     }
 
     const newState = {
-      // Load from localStorage
-      ...getSettings(localStorage),
+      // Load options from gist or localStorage
+      ...(gistState ? gistState : getSettings(localStorage)),
       // and then URL params
-      ...initialState
+      ...queryState,
+      loading: false
     }
 
     // Makes sure the slash in 'application/X' is decoded
     if (newState.language) {
       newState.language = unescapeHtml(newState.language)
+    }
+
+    if (newState.fontFamily && !FONTS.find(({ id }) => id === newState.fontFamily)) {
+      newState.fontFamily = DEFAULT_SETTINGS.fontFamily
     }
 
     this.updateState(newState)
@@ -94,15 +97,25 @@ class Editor extends React.Component {
       window.navigator &&
       window.navigator.userAgent.indexOf('Safari') !== -1 &&
       window.navigator.userAgent.indexOf('Chrome') === -1
+    this.isFirefox =
+      window.navigator &&
+      window.navigator.userAgent.indexOf('Firefox') !== -1 &&
+      window.navigator.userAgent.indexOf('Chrome') === -1
   }
 
   carbonNode = React.createRef()
 
-  updateState = updates => this.setState(updates, () => this.props.onUpdate(this.state))
+  getTheme = () => this.props.themes.find(t => t.id === this.state.theme) || DEFAULT_THEME
+
+  updateState = updates => {
+    this.setState(updates, () => {
+      if (!this.gist) {
+        this.props.onUpdate(this.state)
+      }
+    })
+  }
 
   updateCode = code => this.updateState({ code })
-  updateAspectRatio = aspectRatio => this.updateState({ aspectRatio })
-  updateTitleBar = titleBar => this.updateState({ titleBar })
 
   async getCarbonImage(
     {
@@ -114,23 +127,28 @@ class Editor extends React.Component {
   ) {
     // if safari, get image from api
     const isPNG = format !== 'svg'
-    if (this.props.api.image && this.isSafari && isPNG) {
-      const encodedState = serializeState(this.state)
-      return this.props.api.image(encodedState)
+    if (this.context.image && this.isSafari && isPNG) {
+      const themeConfig = this.getTheme()
+      // pull from custom theme highlights, or state highlights
+      const encodedState = serializeState({
+        ...this.state,
+        highlights: { ...themeConfig.highlights, ...this.state.highlights }
+      })
+      return this.context.image(encodedState)
     }
 
     const node = this.carbonNode.current
 
     const map = new Map()
     const undoMap = value => {
-      map.forEach((value, node) => (node.innerText = value))
+      map.forEach((value, node) => (node.innerHTML = value))
       return value
     }
 
     if (isPNG) {
       node.querySelectorAll('span[role="presentation"]').forEach(node => {
         if (node.innerText && node.innerText.match(/%[A-Za-z0-9]{2}/)) {
-          map.set(node, node.innerText)
+          map.set(node, node.innerHTML)
           node.innerText.match(/%[A-Za-z0-9]{2}/g).forEach(t => {
             node.innerText = node.innerText.replace(t, encodeURIComponent(t))
           })
@@ -157,6 +175,8 @@ class Editor extends React.Component {
       height
     }
 
+    // current font-family used
+    const fontFamily = this.state.fontFamily
     try {
       if (type === 'blob') {
         if (format === 'svg') {
@@ -169,6 +189,11 @@ class Editor extends React.Component {
                   // https://github.com/tsayen/dom-to-image/blob/fae625bce0970b3a039671ea7f338d05ecb3d0e8/src/dom-to-image.js#L551
                   .replace(/%23/g, '#')
                   .replace(/%0A/g, '\n')
+                  // remove other fonts which are not used
+                  .replace(
+                    new RegExp('@font-face\\s+{\\s+font-family: (?!"*' + fontFamily + ').*?}', 'g'),
+                    ''
+                  )
               )
               // https://stackoverflow.com/questions/7604436/xmlparseentityref-no-name-warnings-while-loading-xml-into-a-php-file
               .then(dataUrl => dataUrl.replace(/&(?!#?[a-z0-9]+;)/g, '&amp;'))
@@ -195,14 +220,17 @@ class Editor extends React.Component {
     }
   }
 
-  export(format = 'png') {
+  export(format = 'png', options = {}) {
     const link = document.createElement('a')
 
-    const prefix = this.state.filename || 'carbon'
+    const prefix = options.filename || 'carbon'
 
     return this.getCarbonImage({ format, type: 'blob' }).then(url => {
       if (format !== 'open') {
         link.download = `${prefix}.${format}`
+      }
+      if (this.isFirefox) {
+        link.target = '_blank'
       }
       link.href = url
       document.body.appendChild(link)
@@ -218,7 +246,7 @@ class Editor extends React.Component {
 
   upload() {
     this.getCarbonImage({ format: 'png' }).then(
-      this.props.api.tweet.bind(null, this.state.code || DEFAULT_CODE)
+      this.context.tweet.bind(null, this.state.code || DEFAULT_CODE)
     )
   }
 
@@ -235,19 +263,13 @@ class Editor extends React.Component {
     }
   }
 
-  updateTheme(theme) {
-    this.updateSetting('theme', theme)
-  }
-
   updateLanguage(language) {
-    this.updateSetting('language', language.mime || language.mode)
+    if (language) {
+      this.updateSetting('language', language.mime || language.mode)
+    }
   }
 
   updateBackground({ photographer, ...changes } = {}) {
-    if (this.isSafari) {
-      this.disablePNG = !verifyPayloadSize(changes.backgroundImage)
-    }
-
     if (photographer) {
       this.updateState(({ code = DEFAULT_CODE }) => ({
         ...changes,
@@ -259,6 +281,29 @@ class Editor extends React.Component {
     }
   }
 
+  updateTheme = theme => this.updateState({ theme })
+  updateHighlights = updates =>
+    this.setState(({ highlights = {} }) => ({
+      highlights: {
+        ...highlights,
+        ...updates
+      }
+    }))
+
+  createTheme = theme => {
+    this.props.updateThemes(themes => [theme, ...themes])
+    this.updateTheme(theme.id)
+  }
+
+  removeTheme = id => {
+    this.props.updateThemes(themes => themes.filter(t => t.id !== id))
+    if (this.state.theme.id === id) {
+      this.updateTheme(DEFAULT_THEME.id)
+    }
+  }
+
+  applyPreset = ({ id: preset, ...settings }) => this.updateState({ preset, ...settings })
+
   format = () =>
     formatCode(this.state.code)
       .then(this.updateCode)
@@ -266,87 +311,100 @@ class Editor extends React.Component {
         // create toast here in the future
       })
 
-  applyPreset = ({ id: preset, ...settings }) => this.updateState({ preset, ...settings })
-
   render() {
     const {
-      theme,
+      highlights,
       language,
       backgroundColor,
       backgroundImage,
       backgroundMode,
-      aspectRatio,
-      titleBar,
       code,
       exportSize
     } = this.state
 
-    const config = omit(this.state, ['code', 'aspectRatio', 'titleBar'])
+    const config = omit(this.state, ['code'])
+
+    const theme = this.getTheme()
 
     return (
-      <>
-        <div className="editor">
-          <Toolbar>
-            <Themes key={theme} updateTheme={this.updateTheme} theme={theme} />
-            <Dropdown
-              icon={languageIcon}
-              selected={
-                LANGUAGE_NAME_HASH[language] ||
-                LANGUAGE_MIME_HASH[language] ||
-                LANGUAGE_MODE_HASH[language] ||
-                LANGUAGE_MODE_HASH[DEFAULT_LANGUAGE]
-              }
-              list={LANGUAGES}
-              onChange={this.updateLanguage}
-            />
-            <BackgroundSelect
-              onChange={this.updateBackground}
-              mode={backgroundMode}
-              color={backgroundColor}
-              image={backgroundImage}
-              aspectRatio={aspectRatio}
-            />
-            <Settings
-              {...config}
+      <div className="editor">
+        <Toolbar>
+          <Themes
+            theme={theme}
+            highlights={highlights}
+            update={this.updateTheme}
+            updateHighlights={this.updateHighlights}
+            remove={this.removeTheme}
+            create={this.createTheme}
+            themes={this.props.themes}
+          />
+          <Dropdown
+            title="Language"
+            icon={languageIcon}
+            selected={
+              LANGUAGE_NAME_HASH[language] ||
+              LANGUAGE_MIME_HASH[language] ||
+              LANGUAGE_MODE_HASH[language] ||
+              LANGUAGE_MODE_HASH[DEFAULT_LANGUAGE]
+            }
+            list={LANGUAGES}
+            onChange={this.updateLanguage}
+          />
+          <BackgroundSelect
+            onChange={this.updateBackground}
+            mode={backgroundMode}
+            color={backgroundColor}
+            image={backgroundImage}
+            carbonRef={this.carbonNode.current}
+          />
+          <Settings
+            {...config}
+            onChange={this.updateSetting}
+            resetDefaultSettings={this.resetDefaultSettings}
+            format={this.format}
+            applyPreset={this.applyPreset}
+            getCarbonImage={this.getCarbonImage}
+          />
+          <div className="buttons">
+            <TweetButton onClick={this.upload} />
+            <ExportMenu
               onChange={this.updateSetting}
-              resetDefaultSettings={this.resetDefaultSettings}
-              format={this.format}
-              applyPreset={this.applyPreset}
-              getCarbonImage={this.getCarbonImage}
+              export={this.export}
+              exportSize={exportSize}
+              backgroundImage={backgroundImage}
             />
-            <div className="buttons">
-              {this.props.api.tweet && <TweetButton onClick={this.upload} />}
-              <ExportMenu
-                onChange={this.updateSetting}
-                export={this.export}
-                exportSize={exportSize}
-                disablePNG={this.disablePNG}
-              />
-            </div>
-          </Toolbar>
+          </div>
+        </Toolbar>
 
-          <Dropzone accept="image/*, text/*, application/*" onDrop={this.onDrop}>
-            {({ canDrop }) => (
-              <Overlay
-                isOver={canDrop}
-                title={`Drop your file here to import ${canDrop ? '✋' : '✊'}`}
+        <Dropzone accept="image/*, text/*, application/*" onDrop={this.onDrop}>
+          {({ canDrop }) => (
+            <Overlay
+              isOver={canDrop}
+              title={`Drop your file here to import ${canDrop ? '✋' : '✊'}`}
+            >
+              {/*key ensures Carbon's internal language state is updated when it's changed by Dropdown*/}
+              <Carbon
+                key={language}
+                ref={this.carbonNode}
+                config={this.state}
+                onChange={this.updateCode}
+                loading={this.state.loading}
+                theme={theme}
               >
-                {/*key ensures Carbon's internal language state is updated when it's changed by Dropdown*/}
-                <Carbon
-                  key={language}
-                  config={this.state}
-                  onChange={this.updateCode}
-                  onAspectRatioChange={this.updateAspectRatio}
-                  titleBar={titleBar}
-                  updateTitleBar={this.updateTitleBar}
-                  ref={this.carbonNode}
-                >
-                  {code != null ? code : DEFAULT_CODE}
-                </Carbon>
-              </Overlay>
-            )}
-          </Dropzone>
-        </div>
+                {code != null ? code : DEFAULT_CODE}
+              </Carbon>
+            </Overlay>
+          )}
+        </Dropzone>
+        <style jsx global>
+          {`
+            @font-face {
+              font-family: ${config.fontUrl ? config.fontFamily : ''};
+              src: url(${config.fontUrl || ''}) format('woff');
+              font-display: swap;
+            }
+          `}
+        </style>
         <style jsx>
           {`
             .editor {
@@ -362,16 +420,9 @@ class Editor extends React.Component {
             }
           `}
         </style>
-      </>
+      </div>
     )
   }
-}
-
-const MAX_PAYLOAD_SIZE = 5e6 // bytes
-function verifyPayloadSize(str) {
-  if (typeof str !== 'string') return true
-
-  return new Blob([str]).size < MAX_PAYLOAD_SIZE
 }
 
 function isImage(file) {
@@ -379,7 +430,6 @@ function isImage(file) {
 }
 
 Editor.defaultProps = {
-  api: {},
   onUpdate: () => {},
   onReset: () => {}
 }

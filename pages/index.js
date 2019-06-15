@@ -1,25 +1,39 @@
 // Theirs
 import React from 'react'
 import { withRouter } from 'next/router'
+import { register, unregister } from 'next-offline/runtime'
 import debounce from 'lodash.debounce'
 
 // Ours
-import Editor from '../components/Editor'
+import EditorContainer from '../components/EditorContainer'
 import Page from '../components/Page'
 import { MetaLinks } from '../components/Meta'
-import api from '../lib/api'
-import { updateQueryString } from '../lib/routing'
+import { updateRouteState } from '../lib/routing'
 import { saveSettings, clearSettings, omit } from '../lib/util'
 
 class Index extends React.Component {
+  componentDidMount() {
+    register()
+  }
+  componentWillUnmount() {
+    unregister()
+  }
+
   shouldComponentUpdate = () => false
 
   onEditorUpdate = debounce(
     state => {
-      updateQueryString(this.props.router, state)
+      updateRouteState(this.props.router, state)
       saveSettings(
         localStorage,
-        omit(state, ['code', 'backgroundImage', 'backgroundImageSelection', 'filename'])
+        omit(state, [
+          'code',
+          'backgroundImage',
+          'backgroundImageSelection',
+          'themes',
+          'highlights',
+          'fontUrl'
+        ])
       )
     },
     750,
@@ -30,10 +44,9 @@ class Index extends React.Component {
     return (
       <Page enableHeroText={true}>
         <MetaLinks />
-        <Editor
+        <EditorContainer
           router={this.props.router}
           onUpdate={this.onEditorUpdate}
-          api={api}
           onReset={onReset}
         />
       </Page>

@@ -36,17 +36,11 @@ const CopyButton = React.memo(function CopyButton({ text }) {
   )
 })
 
-export default ({ titleBar, theme, handleTitleBarChange, copyable, code }) => (
+export default ({ theme, copyable, code, light }) => (
   <div className="window-controls">
     {theme === 'bw' ? <ControlsBW /> : <Controls />}
     <div className="window-title-container">
-      <input
-        aria-label="Image Title"
-        value={titleBar || ''}
-        type="text"
-        spellCheck="false"
-        onChange={e => handleTitleBarChange(e.target.value)}
-      />
+      <input aria-label="Image Title" type="text" spellCheck="false" />
     </div>
     {copyable && (
       <div className="copy-button">
@@ -77,9 +71,9 @@ export default ({ titleBar, theme, handleTitleBarChange, copyable, code }) => (
           background: none;
           outline: none;
           border: none;
-          color: white;
           text-align: center;
           font-size: 14px;
+          color: ${light ? COLORS.BLACK : COLORS.SECONDARY};
         }
 
         .copy-button {

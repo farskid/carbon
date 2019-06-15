@@ -7,13 +7,26 @@
     { "src": "^/about(.*)", "dest": "/about" },
     { "src": "^/embed(.*)", "dest": "/embed" },
     { "src": "^/_next/(.*)", "dest": "/_next/$1" },
-    { "src": "^/static/(.*)", "dest": "/static/$1" },
+    { "src": "^/robots.txt", "dest": "/static/robots.txt" },
+    {
+      "src": "^/service-worker.js$",
+      "dest": "/_next/service-worker.js",
+      "headers": {
+        "Service-Worker-Allowed": "/"
+      }
+    },
+    {
+      "src": "^/static/(.*)",
+      "dest": "/static/$1",
+      "headers": {
+        "cache-control": "public, max-age=43200, immutable"
+      }
+    },
     { "src": "^/(.*)", "dest": "/index.html" }
   ],
   "build": {
     "env": {
-      "NODE_ENV": "production",
-      "API_URL": "@carbon_api_url"
+      "NODE_ENV": "production"
     }
   },
   "github": {
